@@ -185,3 +185,4 @@ def compute_quality_report(data: pd.DataFrame) -> dict:
         "issues": issues,
         "error_type_counts": error_type_counts,
     }
+

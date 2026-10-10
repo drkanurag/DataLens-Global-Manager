@@ -112,3 +112,4 @@ services:
 networks:
   datalens-mesh:
     driver: bridge
+
