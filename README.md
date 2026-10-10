@@ -1,67 +1,158 @@
-# DataLens People Dashboard — Location-Based Access
+# 🌐 DataLens Enterprise — Global Manager (Microservices Architecture)
 
-## Run it
+[![Live Public App](https://img.shields.io/badge/🚀_Launch_Live_Public_App-DataLens_Enterprise-4f46e5?style=for-the-badge)](https://drkanurag.github.io/DataLens-Global-Manager/)
+[![Dashboard Direct Link](https://img.shields.io/badge/🌐_Public_Dashboard-Open_Now-0284c7?style=for-the-badge)](https://drkanurag.github.io/DataLens-Global-Manager/frontend/)
+[![Instant CDN Mirror](https://img.shields.io/badge/⚡_Instant_CDN_Mirror-GitHack-059669?style=for-the-badge)](https://raw.githack.com/drkanurag/DataLens-Global-Manager/main/index.html)
 
-Use Python 3.11+ and install the three backend requirements:
+---
+
+## 🔗 Clickable Public Links (Open & Use Immediately)
+
+Anyone in the public can click the links below to open and use **DataLens Enterprise** directly in their browser (no installation required):
+
+- 🚀 **Primary Live Public Application (GitHub Pages):** [**https://drkanurag.github.io/DataLens-Global-Manager/**](https://drkanurag.github.io/DataLens-Global-Manager/)
+- 🌐 **Direct Public Dashboard Endpoint:** [**https://drkanurag.github.io/DataLens-Global-Manager/frontend/**](https://drkanurag.github.io/DataLens-Global-Manager/frontend/)
+- ⚡ **Instant Public CDN Mirror (Raw GitHack):** [**https://raw.githack.com/drkanurag/DataLens-Global-Manager/main/index.html**](https://raw.githack.com/drkanurag/DataLens-Global-Manager/main/index.html)
+- 💻 **Local Microservices API Gateway (when running locally):** [**http://localhost:8000/dashboard/**](http://localhost:8000/dashboard/)
+
+---
+
+## 🔑 Authorized Role IDs for Login
+
+When you open the application, sign in using any of the governed **Role IDs** below:
+
+| Role ID | Alias | Stakeholder Role | Authorized Location Scope | Compensation & Executive Access |
+| :--- | :--- | :--- | :--- | :--- |
+| **`GDF`** | `GDF001` | **Global Data Foundation** | 🌐 **All Locations (Global)** | Full Enterprise Compensation & Executive Summary Suite |
+| **`HRBP-KOL`** | `HRBP_KOL` | **HRBP – Kolkata (MOM / P&O)** | 🔒 **Kolkata Only** | Kolkata Site Compensation & Quality Remediation |
+| **`HRBP-MUM`** | `HRBP_MUM` | **HRBP – Mumbai** | 🔒 **Mumbai Only** | Mumbai Site Compensation & Quality Remediation |
+| **`HRBP-DEL`** | `HRBP_DEL` | **HRBP – New Delhi** | 🔒 **New Delhi Only** | New Delhi Site Compensation & Quality Remediation |
+| **`HRBP-BLR`** | `HRBP_BLR` | **HRBP – Bengaluru** | 🔒 **Bengaluru Only** | Bengaluru Site Compensation & Quality Remediation |
+| **`HRBP-HYD`** | `HRBP_HYD` | **HRBP – Hyderabad** | 🔒 **Hyderabad Only** | Hyderabad Site Compensation & Quality Remediation |
+| **`HRBP-CHN`** | `HRBP_CHN` | **HRBP – Chennai** | 🔒 **Chennai Only** | Chennai Site Compensation & Quality Remediation |
+| **`HRBP-PUN`** | `HRBP_PUN` | **HRBP – Pune** | 🔒 **Pune Only** | Pune Site Compensation & Quality Remediation |
+| **`HRBP-GUR`** | `HRBP_GUR` | **HRBP – Gurugram** | 🔒 **Gurugram Only** | Gurugram Site Compensation & Quality Remediation |
+
+---
+
+## 🏗️ Microservices Architecture
+
+DataLens Enterprise is built as a **6-Service Microservices Mesh** with a shared Row-Level Security (RLS) and Column-Level Security (CLS) governance core, plus a **Client-Side Edge Microservices Runtime** (`frontend/microservices-mesh.js`) so the public web app works seamlessly both with the Python FastAPI cluster and on static public cloud hosting.
+
+```mermaid
+flowchart TB
+    Client["🌐 Public User Browser / BI Embed<br/>(Dashboard UI + Edge Microservices Mesh)"]
+    Gateway["🚪 API Gateway Service<br/>services/api_gateway (Port 8000)"]
+
+    subgraph Mesh["DataLens Backend Microservices Mesh"]
+        Auth["🔐 IAM & Auth Service<br/>services/auth_service (Port 8001)"]
+        Analytics["📊 Workforce Analytics Service<br/>services/analytics_service (Port 8002)"]
+        DQ["⚠️ Data Quality & SAP Audit Service<br/>services/data_quality_service (Port 8003)"]
+        Chatbot["🤖 Scoped AI Chatbot Service<br/>services/chatbot_service (Port 8004)"]
+        Compliance["🛡️ GDPR & Compliance Service<br/>services/compliance_service (Port 8005)"]
+    end
+
+    subgraph Shared["Shared Governance & Data Layer (services/shared)"]
+        RLS["Row-Level & Column-Level Security Engine"]
+        Data[("📁 Master Workforce Data<br/>employee_data.xlsx & access_directory.csv")]
+    end
+
+    Client -->|HTTP / REST| Gateway
+    Gateway -->|/api/auth/*| Auth
+    Gateway -->|/api/filters & /api/analytics/*| Analytics
+    Gateway -->|/api/analytics/data-quality| DQ
+    Gateway -->|/api/chat| Chatbot
+    Gateway -->|/api/compliance/*| Compliance
+
+    Auth --> RLS
+    Analytics --> RLS
+    DQ --> RLS
+    Chatbot --> RLS
+    Compliance --> RLS
+    RLS --> Data
+```
+
+### Microservices Directory & Port Mapping
+
+| Microservice | Directory | Port | Key Endpoints | Responsibility |
+| :--- | :--- | :--- | :--- | :--- |
+| **1. API Gateway Service** | `services/api_gateway/` | `8000` | `/dashboard/`, `/api/health`, `/api/services/status` | Reverse proxy routing, service mesh health discovery, and static UI hosting |
+| **2. IAM & Auth Service** | `services/auth_service/` | `8001` | `POST /api/auth/login`, `GET /api/auth/me`, `GET /api/auth/validate` | Role-based authentication, alias resolution, HMAC token issuance, and session validation |
+| **3. Workforce Analytics Service** | `services/analytics_service/` | `8002` | `GET /api/filters`, `GET /api/analytics/summary`, `/by-location`, `/by-department`, `/by-job-family`, `/monthly`, `/employees`, `/executive-summary` | RLS-filtered KPIs, organizational span of control, executive briefings, and CLS salary masking |
+| **4. Data Quality & SAP Audit Service** | `services/data_quality_service/` | `8003` | `GET /api/analytics/data-quality`, `GET /api/data-quality/rules` | Automated EC vs. SAP reconciliation across 7 anomaly categories, missing fields, and duplicate detection |
+| **5. Scoped AI Chatbot Service** | `services/chatbot_service/` | `8004` | `POST /api/chat`, `GET /api/chat/health` | Natural language workforce assistant, cross-location RLS query blocking, and SOP remediation guidance |
+| **6. GDPR & Compliance Service** | `services/compliance_service/` | `8005` | `GET /api/compliance/audit-log`, `/gdpr-status`, `/stakeholders`, `POST /api/compliance/log-export` | Immutable security event stream, GDPR Art. 5/15/25/32/33 compliance status, and SAR export auditing |
+
+---
+
+## 🚀 How to Run the Microservices
+
+### Option 1: Launch All 6 Microservices Locally (Python Orchestrator)
+
+Use Python 3.11+ to install requirements and start all 6 microservices concurrently on ports `8000`–`8005`:
+
+```powershell
+python -m pip install -r backend/requirements.txt
+python start_microservices.py
+```
+
+Or using PowerShell:
+
+```powershell
+.\start_microservices.ps1
+```
+
+- **Dashboard UI:** [http://localhost:8000/dashboard/](http://localhost:8000/dashboard/)
+- **Live Microservices Mesh Status:** [http://localhost:8000/api/services/status](http://localhost:8000/api/services/status)
+
+### Option 2: Run with Docker Compose (Containerized Microservices)
+
+```powershell
+docker-compose up --build
+```
+
+This builds and starts `datalens-api-gateway` (`:8000`), `datalens-auth-service` (`:8001`), `datalens-analytics-service` (`:8002`), `datalens-data-quality-service` (`:8003`), `datalens-chatbot-service` (`:8004`), and `datalens-compliance-service` (`:8005`) on the `datalens-mesh` bridge network.
+
+### Option 3: Run Unified Gateway Mode (Single Process)
 
 ```powershell
 cd backend
-python -m pip install -r requirements.txt
 uvicorn main:app --reload
 ```
 
 Then open [http://localhost:8000/dashboard/](http://localhost:8000/dashboard/).
 
-## Demo employee IDs
+---
 
-Use `EMP001` for New Delhi, `EMP002` for Mumbai, or `EMP003` for Bengaluru. The complete dummy employee access directory is at `data/access_directory.csv`.
+## 📊 Power BI & Tableau Integration
 
-The server creates a session only after a valid employee ID is entered. Every dashboard and chatbot request carries that session token. The API then applies a server-side location filter before it applies any requested dashboard filter. A user cannot retrieve another city's data by changing a browser filter or calling an API endpoint.
-
-> This is a demo authentication mechanism only. Do not use employee ID alone in production. Use your company SSO, HTTPS, secure token storage, expiry/refresh, audit logging, and a governed user-to-location access table.
-
-## Power BI integration
-
+### Power BI Integration
 Use the same governed `employee_id → location` mapping as a security table in the Power BI semantic model. Create a relationship from `Access[location]` to the employee-data location, then create a role with this DAX filter on the access table:
 
 ```DAX
 Access[UPN] = USERPRINCIPALNAME()
 ```
 
-Assign users/groups to the role in the Power BI Service and test with **View as**. This applies native Power BI Row-Level Security (RLS), including when users use filters, export data, or interact with visuals. The web chatbot can be hosted separately and supplied the Power BI identity/filter context through a custom visual or embedded-report application; never rely only on hiding a slicer.
+Assign users/groups to the role in the Power BI Service and test with **View as**. This applies native Power BI Row-Level Security (RLS), including when users use filters, export data, or interact with visuals.
 
-## Tableau integration
-
+### Tableau Integration
 Create a user-location entitlement table with `username` and `location`, join/relate it to the employee data by location, and add a data-source filter:
 
 ```tableau
 [Username] = USERNAME()
 ```
 
-Publish the data source and workbook, then validate with **Preview as User**. For an embedded Tableau dashboard, pass the authenticated user's identity to Tableau using Trusted Authentication or Connected Apps/JWT. The chatbot should read the same server-side entitlement after the host application validates that identity.
+Publish the data source and workbook, then validate with **Preview as User**.
 
-## Embedding in Power BI or Tableau
+---
 
-The dashboard is platform-neutral: it is a web application powered by the same filter state and governed data API. Embed it in a Power BI HTML/custom visual or Tableau dashboard extension/web object, then pass report filter changes to `/api/chat` and the existing analytics endpoints. The included UI is immediately functional with the workbook and exposes a deterministic, data-grounded assistant; it does not claim to be an in-product native chatbot until the relevant Power BI/Tableau extension is configured.
+## ⚠️ Configured Master-Data Quality Rules (EC vs. SAP)
 
-
-## Demo access roles
-
-The access directory includes one global demo manager: `MANAGER001`. Its role is `Manager` and its location is `All Locations`. Manager sessions can view all locations and may use the dashboard Location scope filter. Employee sessions remain restricted to their authorised location.
-
-Data-quality counts returned by `/api/analytics/data-quality` and `/api/chat` use the same secured data scope, so an employee sees only error counts for their authorised location while the global manager can see all locations or a selected location.
-
-## UI upgrade
-
-The frontend has been upgraded with an enterprise-style responsive layout, interactive SVG charts, click-to-filter behavior for location/department/job family/month, a data-quality center, searchable employee records, improved AI context display, global-manager scope indicators, and dark mode. The server-side authorization remains the source of truth for every analytics and chatbot request.
-
-## Demo manager
-
-`MANAGER001` is the global demo manager. Employees remain restricted to their authorized location. Data-quality counts in the dashboard and chatbot are always calculated from the current server-authorized scope.
-
-
-## Latest UI and data-quality update
-
-The dashboard now includes seven configured data-quality error types. The four newly added demo error types are Department Code is not matching EC vs SAP (12), Incorrect Business Email (10), Manager is not matching EC vs SAP (9), and Company Code is not matching EC vs SAP (7). These counts are dummy demo values and are scoped by authorized location in the API and chatbot.
-
-Demo global manager: MANAGER001 (Alex Morgan). Employee IDs remain location-restricted.
+The `data-quality-service` (`:8003`) continuously audits 7 master-data reconciliation rules within the user's authorized location scope:
+1. **Salary not matching with SAP** (`SOP-HR-01` — Critical)
+2. **Cost centre mismatch with company code** (`SOP-HR-02` — High)
+3. **High range penetration percentage** (`SOP-HR-05` — Advisory)
+4. **Department Code is not matching EC vs SAP** (`SOP-HR-03` — Medium)
+5. **Incorrect Business Email** (`SOP-HR-04` — High)
+6. **Manager is not matching EC vs SAP** (`SOP-HR-06` — Medium)
+7. **Company Code is not matching EC vs SAP** (`SOP-HR-07` — High)

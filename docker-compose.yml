@@ -1,0 +1,114 @@
+version: "3.9"
+
+services:
+  auth-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: datalens-auth-service
+    environment:
+      - SERVICE_MODULE=services.auth_service.main:app
+      - PORT=8001
+    ports:
+      - "8001:8001"
+    volumes:
+      - ./data:/app/data
+    networks:
+      - datalens-mesh
+    restart: unless-stopped
+
+  analytics-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: datalens-analytics-service
+    environment:
+      - SERVICE_MODULE=services.analytics_service.main:app
+      - PORT=8002
+    ports:
+      - "8002:8002"
+    volumes:
+      - ./data:/app/data
+    networks:
+      - datalens-mesh
+    restart: unless-stopped
+
+  data-quality-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: datalens-data-quality-service
+    environment:
+      - SERVICE_MODULE=services.data_quality_service.main:app
+      - PORT=8003
+    ports:
+      - "8003:8003"
+    volumes:
+      - ./data:/app/data
+    networks:
+      - datalens-mesh
+    restart: unless-stopped
+
+  chatbot-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: datalens-chatbot-service
+    environment:
+      - SERVICE_MODULE=services.chatbot_service.main:app
+      - PORT=8004
+    ports:
+      - "8004:8004"
+    volumes:
+      - ./data:/app/data
+    networks:
+      - datalens-mesh
+    restart: unless-stopped
+
+  compliance-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: datalens-compliance-service
+    environment:
+      - SERVICE_MODULE=services.compliance_service.main:app
+      - PORT=8005
+    ports:
+      - "8005:8005"
+    volumes:
+      - ./data:/app/data
+    networks:
+      - datalens-mesh
+    restart: unless-stopped
+
+  api-gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: datalens-api-gateway
+    environment:
+      - SERVICE_MODULE=services.api_gateway.main:app
+      - PORT=8000
+      - DATALENS_PROXY_MODE=1
+      - AUTH_SERVICE_URL=http://auth-service:8001
+      - ANALYTICS_SERVICE_URL=http://analytics-service:8002
+      - DATA_QUALITY_SERVICE_URL=http://data-quality-service:8003
+      - CHATBOT_SERVICE_URL=http://chatbot-service:8004
+      - COMPLIANCE_SERVICE_URL=http://compliance-service:8005
+    ports:
+      - "8000:8000"
+    depends_on:
+      - auth-service
+      - analytics-service
+      - data-quality-service
+      - chatbot-service
+      - compliance-service
+    volumes:
+      - ./data:/app/data
+    networks:
+      - datalens-mesh
+    restart: unless-stopped
+
+networks:
+  datalens-mesh:
+    driver: bridge

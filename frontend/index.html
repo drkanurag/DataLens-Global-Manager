@@ -3586,6 +3586,7 @@ header {
   </div>
 </div>
 
+<script src="./microservices-mesh.js"></script>
 <script>
 /**
  * DataLens Enterprise Client
@@ -3609,17 +3610,38 @@ const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&
 const formatNumber = n => Number(n || 0).toLocaleString('en-IN');
 const formatCurrency = n => n ? '₹' + Number(Math.round(n)).toLocaleString('en-IN') : '—';
 
-// API Client Wrapper
+// API Client Wrapper (with automatic Edge Microservices Mesh fallback for public GitHub Pages hosting)
+let useEdgeMesh = location.hostname.endsWith('github.io') || location.hostname.endsWith('githack.com') || location.protocol === 'file:';
 async function fetchAPI(path, options = {}) {
   options.headers = {
     ...(options.headers || {}),
     ...(sessionToken ? { 'X-Employee-Token': sessionToken } : {})
   };
-  const response = await fetch(API_BASE + path, options);
-  let json = {};
-  try { json = await response.json(); } catch(e) {}
-  if (!response.ok) throw new Error(json.detail || 'An unexpected error occurred.');
-  return json;
+  if (!useEdgeMesh) {
+    try {
+      const response = await fetch(API_BASE + path, options);
+      if (response.status === 404 || response.status === 405) {
+        if (window.DataLensMicroservicesMesh) {
+          useEdgeMesh = true;
+          return await window.DataLensMicroservicesMesh.dispatch(path, options);
+        }
+      }
+      let json = {};
+      try { json = await response.json(); } catch(e) {}
+      if (!response.ok) throw new Error(json.detail || 'An unexpected error occurred.');
+      return json;
+    } catch (err) {
+      if (err instanceof TypeError && window.DataLensMicroservicesMesh) {
+        useEdgeMesh = true;
+        return await window.DataLensMicroservicesMesh.dispatch(path, options);
+      }
+      throw err;
+    }
+  }
+  if (window.DataLensMicroservicesMesh) {
+    return await window.DataLensMicroservicesMesh.dispatch(path, options);
+  }
+  throw new Error('Microservices runtime unavailable.');
 }
 const fetchApi = fetchAPI;
 
